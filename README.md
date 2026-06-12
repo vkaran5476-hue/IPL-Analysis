@@ -68,5 +68,5 @@ top_batsmen.to_csv('top_batsmen.csv', index=False)
 season_total.to_csv('season_runs.csv', index=False)
 deliveries.to_csv('deliveries_clean.csv', index=False)
 
-print("✅ All files exported successfully!")
+print("All files exported successfully!")
 print("Files saved:", ['team_wins.csv', 'top_batsmen.csv', 'season_runs.csv', 'deliveries_clean.csv'])
