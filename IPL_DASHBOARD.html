@@ -1,0 +1,248 @@
+
+<h2 class="sr-only">IPL Power BI-style analytics dashboard with KPI cards, bowler scatter, batter shot breakdown, run trends, team extras funnel, dismissal types, and over-by-over line chart</h2>
+
+<style>
+.dash-wrap { padding: 0; font-family: var(--font-sans); }
+.top-bar { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: var(--border-radius-lg); padding: 16px 20px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.top-bar-title { color: #fff; font-size: 18px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+.top-bar-sub { color: rgba(255,255,255,0.55); font-size: 12px; }
+.ipl-badge { background: #e8b923; color: #1a1a2e; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+.grid-3-2 { display: grid; grid-template-columns: 1fr 1.6fr 1.4fr; gap: 12px; margin-bottom: 12px; }
+.grid-3-3 { display: grid; grid-template-columns: 1.4fr 1.6fr 1fr; gap: 12px; }
+.kpi { border-radius: var(--border-radius-lg); padding: 14px 16px; position: relative; overflow: hidden; }
+.kpi-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.kpi-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.kpi-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.kpi-label { font-size: 11px; color: rgba(255,255,255,0.75); margin: 0 0 4px; font-weight: 400; }
+.kpi-value { font-size: 28px; font-weight: 500; color: #fff; margin: 0; line-height: 1.1; }
+.kpi-sub { font-size: 11px; color: rgba(255,255,255,0.6); margin: 4px 0 0; }
+.kpi-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 36px; color: rgba(255,255,255,0.15); }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px; }
+.card-title { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--color-text-secondary); }
+.legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+</style>
+
+<div class="dash-wrap">
+
+<div class="top-bar">
+  <div class="top-bar-title">
+    <i class="ti ti-cricket" aria-hidden="true" style="font-size:20px; color:#e8b923;"></i>
+    IPL analytics dashboard
+    <span class="ipl-badge">LIVE DATA</span>
+  </div>
+  <div class="top-bar-sub">deliveries.csv · IPL_SERIES.xlsx · All seasons</div>
+</div>
+
+<div class="grid-3">
+  <div class="kpi kpi-1">
+    <p class="kpi-label">Total batsman runs</p>
+    <p class="kpi-value">3,30,064</p>
+    <p class="kpi-sub">across all matches</p>
+    <i class="ti ti-chart-bar kpi-icon" aria-hidden="true"></i>
+  </div>
+  <div class="kpi kpi-2">
+    <p class="kpi-label">Total extra runs</p>
+    <p class="kpi-value">17,692</p>
+    <p class="kpi-sub">wides, no-balls & byes</p>
+    <i class="ti ti-plus kpi-icon" aria-hidden="true"></i>
+  </div>
+  <div class="kpi kpi-3">
+    <p class="kpi-label">Total runs scored</p>
+    <p class="kpi-value">3,47,756</p>
+    <p class="kpi-sub">combined all deliveries</p>
+    <i class="ti ti-trending-up kpi-icon" aria-hidden="true"></i>
+  </div>
+</div>
+
+<div class="grid-3-2">
+  <div class="card">
+    <p class="card-title">Top bowlers — wickets</p>
+    <div style="position:relative; width:100%; height:220px;">
+      <canvas id="bowlerScatter" role="img" aria-label="Bubble chart of top 10 IPL wicket-takers">Top: YS Chahal 213, DJ Bravo 207, PP Chawla 201, SP Narine 200.</canvas>
+    </div>
+  </div>
+  <div class="card">
+    <p class="card-title">Shot breakdown by batter</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span>Fours</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#e8b923;"></span>Sixes</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1D9E75;"></span>Singles</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#D85A30;"></span>Twos</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#888780;"></span>Dots</span>
+    </div>
+    <div style="position:relative; width:100%; height:196px;">
+      <canvas id="stackedChart" role="img" aria-label="100% stacked bar chart showing shot breakdown per batter">Batter shot composition including fours, sixes, singles, twos and dot balls.</canvas>
+    </div>
+  </div>
+  <div class="card">
+    <p class="card-title">Balls faced — top batters</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#764ba2;"></span>Balls faced</span>
+    </div>
+    <div style="position:relative; width:100%; height:196px;">
+      <canvas id="areaChart" role="img" aria-label="Area chart of balls faced by top batters">V Kohli 6236, S Dhawan 5483, RG Sharma 5183.</canvas>
+    </div>
+  </div>
+</div>
+
+<div class="grid-3-3">
+  <div class="card">
+    <p class="card-title">Extra runs by team</p>
+    <div style="position:relative; width:100%; height:210px;">
+      <canvas id="funnelChart" role="img" aria-label="Horizontal bar chart of extra runs by team">Mumbai Indians lead with 2230 extra runs.</canvas>
+    </div>
+  </div>
+  <div class="card">
+    <p class="card-title">Runs by over — top 5 batters</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#4facfe;"></span>V Kohli</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#e8b923;"></span>S Dhawan</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f5576c;"></span>RG Sharma</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1D9E75;"></span>DA Warner</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#764ba2;"></span>SK Raina</span>
+    </div>
+    <div style="position:relative; width:100%; height:186px;">
+      <canvas id="lineChart" role="img" aria-label="Multi-line chart showing runs per over for top 5 batters across 20 overs">Runs by over for V Kohli, S Dhawan, RG Sharma, DA Warner, SK Raina.</canvas>
+    </div>
+  </div>
+  <div class="card">
+    <p class="card-title">Dismissal types</p>
+    <div style="position:relative; width:100%; height:210px;">
+      <canvas id="dismissalChart" role="img" aria-label="Doughnut chart of wicket dismissal types. Caught dominates at 8063.">Caught 8063, Bowled 2212, Run out 1114, LBW 800, others.</canvas>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const noLegend = { plugins: { legend: { display: false } } };
+const baseOpts = { responsive: true, maintainAspectRatio: false };
+
+new Chart(document.getElementById('bowlerScatter'), {
+  type: 'bar',
+  data: {
+    labels: ['Chahal','Bravo','Chawla','Narine','Ashwin','B Kumar','Malinga','Mishra','Bumrah','Jadeja'],
+    datasets: [{
+      data: [213,207,201,200,198,195,188,183,182,169],
+      backgroundColor: ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#00f2fe','#e8b923','#1D9E75','#D85A30','#378ADD'],
+      borderRadius: 6, borderSkipped: false
+    }]
+  },
+  options: { ...baseOpts, ...noLegend, indexAxis: 'y',
+    scales: {
+      x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 10 }, color: '#888' } },
+      y: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#888' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('stackedChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Kohli','Dhawan','Sharma','Warner','Raina','Dhoni','ABD','Gayle'],
+    datasets: [
+      { label: 'Fours', data: [708,768,599,663,506,363,414,408], backgroundColor: '#378ADD', borderRadius: 2 },
+      { label: 'Sixes', data: [273,153,281,236,204,252,253,359], backgroundColor: '#e8b923', borderRadius: 2 },
+      { label: 'Singles', data: [2591,2102,1996,1682,1708,1554,1420,1018], backgroundColor: '#1D9E75', borderRadius: 2 },
+      { label: 'Twos', data: [445,299,263,370,271,340,268,92], backgroundColor: '#D85A30', borderRadius: 2 },
+      { label: 'Dots', data: [2198,2136,2036,1873,1476,1423,1115,1636], backgroundColor: '#888780', borderRadius: 2 }
+    ]
+  },
+  options: { ...baseOpts, ...noLegend,
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 }, color: '#888', autoSkip: false } },
+      y: { stacked: true, max: 100, grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 10 }, color: '#888', callback: v => v + '%' } }
+    },
+    plugins: { legend: { display: false }, tooltip: {
+      callbacks: {
+        label: ctx => {
+          const ds = ctx.chart.data.datasets;
+          const total = ds.reduce((s,d)=>s+(d.data[ctx.dataIndex]||0),0);
+          return ` ${ctx.dataset.label}: ${Math.round(ctx.raw/total*100)}%`;
+        }
+      }
+    }}
+  }
+});
+
+new Chart(document.getElementById('areaChart'), {
+  type: 'line',
+  data: {
+    labels: ['Kohli','Dhawan','Sharma','Warner','Raina','Dhoni','Uthappa','Rahane'],
+    datasets: [{
+      data: [6236,5483,5183,4849,4177,3947,3927,3858],
+      borderColor: '#764ba2', backgroundColor: 'rgba(118,75,162,0.15)',
+      fill: true, tension: 0.4, pointBackgroundColor: '#764ba2', pointRadius: 5, borderWidth: 2,
+      borderDash: [0]
+    }]
+  },
+  options: { ...baseOpts, ...noLegend,
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#888' } },
+      y: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 10 }, color: '#888' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('funnelChart'), {
+  type: 'bar',
+  data: {
+    labels: ['MI','KKR','CSK','RCB','RR','KXIP','SRH','DD'],
+    datasets: [{
+      data: [2230,2182,1890,1882,1673,1523,1430,1274],
+      backgroundColor: ['#4facfe','#00f2fe','#f5576c','#e8b923','#1D9E75','#764ba2','#D85A30','#378ADD'],
+      borderRadius: 5
+    }]
+  },
+  options: { ...baseOpts, ...noLegend, indexAxis: 'y',
+    scales: {
+      x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font: { size: 10 }, color: '#888' } },
+      y: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#888' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: {
+    labels: Array.from({length:20},(_,i)=>i+1),
+    datasets: [
+      { label:'V Kohli', data:[479,448,448,534,451,449,369,436,439,456,424,456,415,362,379,370,345,325,233,196], borderColor:'#4facfe', backgroundColor:'transparent', tension:0.4, pointRadius:2, borderWidth:2 },
+      { label:'S Dhawan', data:[456,618,688,558,543,552,361,391,327,351,301,297,227,243,188,169,175,146,131,47], borderColor:'#e8b923', backgroundColor:'transparent', tension:0.4, pointRadius:2, borderWidth:2 },
+      { label:'RG Sharma', data:[355,357,321,404,376,324,300,269,341,347,338,354,322,351,358,337,371,298,250,257], borderColor:'#f5576c', backgroundColor:'transparent', tension:0.4, pointRadius:2, borderWidth:2 },
+      { label:'DA Warner', data:[477,560,558,557,607,559,330,340,400,320,308,243,248,199,233,213,149,94,118,54], borderColor:'#1D9E75', backgroundColor:'transparent', tension:0.4, pointRadius:2, borderWidth:2 },
+      { label:'SK Raina', data:[39,161,243,282,395,440,313,350,363,369,391,363,324,325,279,235,238,180,159,87], borderColor:'#764ba2', backgroundColor:'transparent', tension:0.4, pointRadius:2, borderWidth:2 }
+    ]
+  },
+  options: { ...baseOpts, ...noLegend,
+    scales: {
+      x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font:{size:10}, color:'#888' }, title: { display:true, text:'Over', font:{size:10}, color:'#888' } },
+      y: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { font:{size:10}, color:'#888' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('dismissalChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Caught','Bowled','Run out','LBW','Caught & B','Stumped','Others'],
+    datasets: [{
+      data: [8063,2212,1114,800,367,358,36],
+      backgroundColor: ['#4facfe','#e8b923','#f5576c','#1D9E75','#764ba2','#D85A30','#888780'],
+      borderWidth: 2, borderColor: 'var(--color-background-primary)', hoverOffset: 6
+    }]
+  },
+  options: { ...baseOpts,
+    cutout: '62%',
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 10 }, color: '#888', boxWidth: 10, padding: 8 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw.toLocaleString()}` } }
+    }
+  }
+});
+</script>
